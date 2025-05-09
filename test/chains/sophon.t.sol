@@ -8,7 +8,7 @@ import {
     PendleSophonPointManager
 } from "pendle-sy/core/StandardizedYield/implementations/Sophon/PendleSophonPointManager.sol";
 
-import {SYTest} from "../../common/SYTest.t.sol";
+import {SYTest} from "../common/SYTest.t.sol";
 
 interface ISophonFarming is ISophonFarming_ {
     function setUsersWhitelisted(address _userAdmin, address[] memory _users, bool _isInWhitelist) external;
@@ -24,7 +24,7 @@ contract PendleSophonFarmingSYTest is SYTest {
     uint256 pid;
 
     function setUpFork() internal override {
-        vm.createSelectFork("ethereum", 20438259);
+        vm.createSelectFork("https://eth.llamarpc.com", 20438259);
     }
 
     function deploySY() internal override {

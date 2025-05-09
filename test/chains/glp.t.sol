@@ -7,7 +7,7 @@ import {IRewardRouterV2} from "pendle-sy/interfaces/GMX/IRewardRouterV2.sol";
 import {IWETH} from "pendle-sy/interfaces/IWETH.sol";
 import {PendleGlpSY} from "pendle-sy/core/StandardizedYield/implementations/GLP/PendleGlpSY.sol";
 
-import {SYTest} from "../../common/SYTest.t.sol";
+import {SYTest} from "../common/SYTest.t.sol";
 
 contract PendleGlpSYTest is SYTest {
     address internal constant GLP = 0x4277f8F2c384827B5273592FF7CeBd9f2C1ac258;
@@ -24,7 +24,7 @@ contract PendleGlpSYTest is SYTest {
     IRewardRouterV2 glpRewardRouter;
 
     function setUpFork() internal override {
-        vm.createSelectFork("arbitrum", 189565901);
+        vm.createSelectFork("https://arbitrum-one.public.blastapi.io", 189565902);
     }
 
     function deploySY() internal override {

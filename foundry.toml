@@ -17,10 +17,3 @@ remappings = [
 ]
 ast = false
 show_progress = true
-
-[rpc_endpoints]
-arbitrum = "${ARBITRUM_RPC}"
-base = "${BASE_RPC}"
-ethereum = "${ETH_RPC}"
-
-# See more config options https://github.com/foundry-rs/foundry/blob/master/crates/config/README.md#all-options

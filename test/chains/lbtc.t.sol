@@ -7,14 +7,14 @@ import {IStandardizedYield} from "pendle-sy/interfaces/IStandardizedYield.sol";
 import {ILBTCMinterBase} from "pendle-sy/interfaces/Lombard/ILBTCMinterBase.sol";
 import {PendleLBTCBaseSY} from "pendle-sy/core/StandardizedYield/implementations/Lombard/PendleLBTCBaseSY.sol";
 
-import {SYTest} from "../../common/SYTest.t.sol";
+import {SYTest} from "../common/SYTest.t.sol";
 
 contract PendleLBTCBaseSYTest is SYTest {
     IERC20 cbbtc;
     ILBTCMinterBase minter;
 
     function setUpFork() internal override {
-        vm.createSelectFork("base", 22685768);
+        vm.createSelectFork("https://base.llamarpc.com");
     }
 
     function deploySY() internal override {
