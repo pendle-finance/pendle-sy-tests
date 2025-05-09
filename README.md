@@ -39,6 +39,22 @@ Once you have implemented your adapter, running test is as short as 10 LOCs. Ple
 
 If your yield bearing asset is not in the above three standards, you can implement your own SY token. Please refer to examples in [our public sy repository](https://github.com/pendle-finance/Pendle-SY-Public).
 
+## Run the tests
+
+To run the tests, you can use the following command:
+
+```bash
+forge test --match-contract [YOUR_CONTRACT_NAME] -vv
+```
+
+To better review the test results, please check all the lines starting with `[DO CHECK]` mark and see if the result is expected:
+
+- **Preview**: This consists of depositing from a `tokenIn` and redeeming to a `tokenOut`. Please check if the according value of `tokenIn` and `tokenOut` are equivalent.
+
+- **Metadata**: Please read all the lines to see if the metadata you put in is correct.
+
+- **Rewards** (adapter can skip): Please check if all the yielding reward tokens are being distributed and claimed correctly.
+
 ## Deploy your implementation
 
 For your own safety, we recommend you to move the tested implementation to your preferred place where you have better control over its security. To make this easier, you can use Foundry's flattening feature:
