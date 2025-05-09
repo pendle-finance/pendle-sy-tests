@@ -31,7 +31,7 @@ Pendle provides a feature to [quickly launch your SY token/market](https://app.p
 
 In addition to this, we also have a feature called **_adapter_** which allows you to add more input/output tokens to your SY wrapper. Say if your stablecoin is mintable from `USDC/USDT`, your liquid restaking Bitcoin is mintable from `WBTC`, you can implement an adapter to help users utilize this minting route.
 
-An example for adapter is available in `test/sy/adapters/PendleUSDSAdapter.sol` where we launch an ERC20 wrapper for `USDS` with minting available from `DAI`. Please refer to the [Pendle Adapter documentation](./lib/pendle-sy/contracts/interfaces/IStandardizedYieldAdapter.sol) for better understanding of the interface.
+An example for adapter is available in `test/sy/adapters/PendleUSDSAdapter.sol` where we launch an ERC20 wrapper for `USDS` with minting available from `DAI`. Please refer to the [Pendle Adapter documentation](https://github.com/pendle-finance/pendle-sy/blob/main/contracts/interfaces/IStandardizedYieldAdapter.sol) for better understanding of the interface.
 
 Once you have implemented your adapter, running test is as short as 10 LOCs. Please check the example [here](./test/sy/usds.t.sol).
 
