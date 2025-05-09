@@ -34,7 +34,9 @@ abstract contract TestFoundation is ArrayHelpers, DeployHelpers, TokenHelpers, T
     function deploySY() internal virtual;
 
     function initializeSY() internal virtual {
-        console.log("Exchange rate after deployment:", sy.exchangeRate());
+        console.log("[-----initializeSY-----]");
+        console.log("[DO CHECK] Exchange rate after deployment:", sy.exchangeRate());
+        console.log("");
     }
 
     function refAmountFor(address token) internal view virtual returns (uint256) {

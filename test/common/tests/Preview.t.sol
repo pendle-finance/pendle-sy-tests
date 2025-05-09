@@ -6,31 +6,47 @@ import {console} from "forge-std/Test.sol";
 import {TestFoundation} from "../TestFoundation.sol";
 
 abstract contract PreviewTest is TestFoundation {
+    uint256 internal constant DENOM = 17;
+    uint256 internal constant NUMER = 3;
+    uint256 internal constant NUM_TESTS = 20;
+
     function test_preview_depositThenRedeem() public {
         address[] memory allTokensIn = getTokensInForPreviewTest();
         address[] memory allTokensOut = getTokensOutForPreviewTest();
 
+        console.log("[-----test_preview_depositThenRedeem-----]");
+
         address alice = wallets[0];
 
-        uint256 snapshot = vm.snapshotState();
-        for (uint256 i = 0; i < allTokensIn.length; ++i) {
-            for (uint256 j = 0; j < allTokensOut.length; ++j) {
-                vm.revertToState(snapshot);
+        uint256 divBy = 1;
 
-                address tokenIn = allTokensIn[i];
-                address tokenOut = allTokensOut[j];
-                uint256 amountIn = refAmountFor(tokenIn);
+        for (uint256 it = 0; it < NUM_TESTS; ++it) {
+            address tokenIn = allTokensIn[it % allTokensIn.length];
+            address tokenOut = allTokensOut[(it + 1) % allTokensOut.length];
+            uint256 amountIn = refAmountFor(tokenIn) / divBy;
 
-                console.log("Testing", getSymbol(tokenIn), "=>", getSymbol(tokenOut));
-                console.log("Amount in:", amountIn);
+            console.log("[DO CHECK] ================= Test:", it + 1, " ====================");
+            console.log("Testing ", getSymbol(tokenIn), "=>", getSymbol(tokenOut));
+            console.log("Amount in :", amountIn);
 
-                fundToken(alice, tokenIn, amountIn);
-                _executePreviewTest(alice, tokenIn, amountIn, tokenOut);
-            }
+            fundToken(alice, tokenIn, amountIn);
+
+            uint256 amountOut = _executePreviewTest(alice, tokenIn, amountIn, tokenOut);
+            console.log("Amount out:", amountOut);
+            console.log("");
+
+            divBy = (divBy * NUMER) % DENOM;
         }
+
+        console.log("");
     }
 
-    function _executePreviewTest(address wallet, address tokenIn, uint256 netTokenIn, address tokenOut) private {
+    function _executePreviewTest(
+        address wallet,
+        address tokenIn,
+        uint256 netTokenIn,
+        address tokenOut
+    ) private returns (uint256) {
         uint256 depositIn = netTokenIn / 2;
         for (uint256 i = 0; i < 2; ++i) {
             uint256 balanceBefore = sy.balanceOf(wallet);
@@ -44,6 +60,7 @@ abstract contract PreviewTest is TestFoundation {
         }
 
         uint256 redeemIn = sy.balanceOf(wallet) / 2;
+        uint256 totalAmountOut = 0;
         for (uint256 i = 0; i < 2; ++i) {
             uint256 balanceBefore = getBalance(wallet, tokenOut);
 
@@ -53,7 +70,10 @@ abstract contract PreviewTest is TestFoundation {
 
             assertEq(earning, actual, "previewRedeem: actual != earning");
             assertEq(preview, actual, "previewRedeem: preview != actual");
+
+            totalAmountOut += actual;
         }
+        return totalAmountOut;
     }
 
     function getTokensInForPreviewTest() internal view virtual returns (address[] memory) {
