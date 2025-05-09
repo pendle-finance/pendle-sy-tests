@@ -23,3 +23,5 @@ jspm_packages
 !.yarn/sdks
 !.yarn/versions
 .pnp.*
+
+flattened_contracts/
