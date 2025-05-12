@@ -47,7 +47,7 @@ To run the tests, you can use the following command:
 forge test --match-contract [YOUR_CONTRACT_NAME] -vv
 ```
 
-To better review the test results, please check all the lines starting with `[DO CHECK]` mark and see if the result is expected:
+To better review the test results, please check all the lines starting with `[CHECK REQUIRED]` mark and see if the result is expected:
 
 - **Preview**: This consists of depositing from a `tokenIn` and redeeming to a `tokenOut`. Please check if the according value of `tokenIn` and `tokenOut` are equivalent.
 

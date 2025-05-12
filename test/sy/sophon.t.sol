@@ -74,4 +74,8 @@ contract PendleSophonFarmingSYTest is SYTest {
             return super.getBalance(wallet, token);
         }
     }
+
+    function hasReward() internal pure override returns (bool) {
+        return true;
+    }
 }

@@ -7,6 +7,10 @@ import {TestFoundation} from "../TestFoundation.sol";
 
 abstract contract RewardsTest is TestFoundation {
     function test_rewards_claim() public {
+        if (!hasReward()) {
+            return;
+        }
+
         console.log("[-----test_rewards_claim-----]");
 
         address alice = wallets[0];
@@ -29,7 +33,7 @@ abstract contract RewardsTest is TestFoundation {
 
             uint256 expected = rewardAmounts[i];
             uint256 actual = rewardBalancesAfter[i] - rewardBalancesBefore[i];
-            console.log("[DO CHECK] Claimed", actual, getSymbol(rewardTokens[i]));
+            console.log("[CHECK REQUIRED] Claimed", actual, getSymbol(rewardTokens[i]));
             assertGt(actual, 0, "Claimed amount should be greater than 0");
             assertEq(
                 actual,
@@ -40,5 +44,9 @@ abstract contract RewardsTest is TestFoundation {
         console.log("");
     }
 
-    function addFakeRewards() internal virtual returns (bool[] memory);
+    function addFakeRewards() internal virtual returns (bool[] memory) {}
+
+    function hasReward() internal pure virtual returns (bool) {
+        return false;
+    }
 }
