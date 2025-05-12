@@ -85,4 +85,8 @@ contract PendleGlpSYTest is SYTest {
         // skip MIM pool due to error "Vault: poolAmount exceeded" when redeeming
         erase(res, MIM);
     }
+
+    function hasReward() internal pure override returns (bool) {
+        return true;
+    }
 }

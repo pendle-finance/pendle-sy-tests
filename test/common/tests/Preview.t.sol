@@ -25,7 +25,7 @@ abstract contract PreviewTest is TestFoundation {
             address tokenOut = allTokensOut[(it + 1) % allTokensOut.length];
             uint256 amountIn = refAmountFor(tokenIn) / divBy;
 
-            console.log("[DO CHECK] ================= Test:", it + 1, " ====================");
+            console.log("[CHECK REQUIRED] ================= Test:", it + 1, " ====================");
             console.log("Testing ", getSymbol(tokenIn), "=>", getSymbol(tokenOut));
             console.log("Amount in :", amountIn);
 

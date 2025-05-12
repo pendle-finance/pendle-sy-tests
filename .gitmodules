@@ -3,9 +3,9 @@
 	url = https://github.com/foundry-rs/forge-std
 [submodule "lib/pendle-sy"]
 	path = lib/pendle-sy
-	url = git@github.com:pendle-finance/pendle-sy.git
+	url = git@github.com:pendle-finance/Pendle-SY-Public.git
 	branch = main
 [submodule "lib/pendle-core"]
 	path = lib/pendle-core
-	url = git@github.com:pendle-finance/pendle-core-v2.git
+	url = git@github.com:pendle-finance/pendle-core-v2-public.git
 	branch = main
