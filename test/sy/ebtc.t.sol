@@ -9,6 +9,14 @@ import {PendleEBTCBeraSYV2} from "pendle-sy/core/StandardizedYield/implementatio
 import {SYTest} from "../common/SYTest.t.sol";
 import {console} from "forge-std/Test.sol";
 
+interface MockRoles {
+    function canCall(
+        address user,
+        address target,
+        bytes4 functionSig
+    ) external view returns (bool);
+}
+
 contract PendleEBTCSYTest is SYTest {
 
     function setUpFork() internal override {
@@ -18,15 +26,17 @@ contract PendleEBTCSYTest is SYTest {
     function deploySY() internal override {
         vm.startPrank(deployer);
 
-        console.log("123");
         address logic = address(new PendleEBTCBeraSYV2());
-        console.log("456");
         sy = IStandardizedYield(
             deployTransparentProxy(logic, deployer, abi.encodeCall(PendleEBTCBeraSYV2.initialize, ()))
         );
-        console.log("789");
-
         vm.stopPrank();
+
+        vm.mockCall(
+            0x829675330fdcEE01022983493e71F73fb53eaB45,
+            MockRoles.canCall.selector,
+            abi.encode(1)
+        );
     }
 
     function initializeSY() internal override {
