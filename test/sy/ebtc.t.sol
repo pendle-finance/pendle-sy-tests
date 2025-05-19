@@ -5,37 +5,35 @@ import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import {PendleBoringOneracle} from "pendle-core/oracles/internal/PendleBoringOneracle.sol";
 import {IStandardizedYield} from "pendle-sy/interfaces/IStandardizedYield.sol";
 import {ILBTCMinterBase} from "pendle-sy/interfaces/Lombard/ILBTCMinterBase.sol";
-import {PendleLBTCBaseSYV2} from "pendle-sy/core/StandardizedYield/implementations/Lombard/PendleLBTCBaseSYV2.sol";
-
+import {PendleEBTCBeraSYV2} from "pendle-sy/core/StandardizedYield/implementations/EtherFi/PendleEBTCBeraSYV2.sol";
 import {SYTest} from "../common/SYTest.t.sol";
+import {console} from "forge-std/Test.sol";
 
-contract PendleLBTCBaseSYTest is SYTest {
-    IERC20 cbbtc;
-    ILBTCMinterBase minter;
+contract PendleEBTCSYTest is SYTest {
 
     function setUpFork() internal override {
-        vm.createSelectFork("https://base-mainnet.blastapi.io/6fa0353c-5dce-4f79-a3ea-bb2c9bf11ce7 ");
+        vm.createSelectFork("ethereum");
     }
 
     function deploySY() internal override {
         vm.startPrank(deployer);
 
-        address logic = address(new PendleLBTCBaseSYV2());
+        console.log("123");
+        address logic = address(new PendleEBTCBeraSYV2());
+        console.log("456");
         sy = IStandardizedYield(
-            deployTransparentProxy(logic, deployer, abi.encodeCall(PendleLBTCBaseSYV2.initialize, ()))
+            deployTransparentProxy(logic, deployer, abi.encodeCall(PendleEBTCBeraSYV2.initialize, ()))
         );
+        console.log("789");
 
         vm.stopPrank();
     }
 
     function initializeSY() internal override {
-        super.initializeSY();
+        // super.initializeSY();
 
-        PendleLBTCBaseSYV2 _sy = PendleLBTCBaseSYV2(payable(address(sy)));
-        cbbtc = IERC20(_sy.CBBTC());
-        minter = ILBTCMinterBase(_sy.MINTER());
-
-        startToken = _sy.yieldToken();
+        // PendleEBTCBeraSYV2 _sy = PendleEBTCBeraSYV2(payable(address(sy)));
+        // startToken = _sy.yieldToken();
     }
 
     function addFakeRewards() internal override returns (bool[] memory) {}
