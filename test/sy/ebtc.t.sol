@@ -6,6 +6,7 @@ import {PendleBoringOneracle} from "pendle-core/oracles/internal/PendleBoringOne
 import {IStandardizedYield} from "pendle-sy/interfaces/IStandardizedYield.sol";
 import {ILBTCMinterBase} from "pendle-sy/interfaces/Lombard/ILBTCMinterBase.sol";
 import {PendleEBTCBeraSYV2} from "pendle-sy/core/StandardizedYield/implementations/EtherFi/PendleEBTCBeraSYV2.sol";
+import {PendleRescalingTokenFactory} from "pendle-sy/core/Misc/PendleRescalingTokenFactory.sol";
 import {SYTest} from "../common/SYTest.t.sol";
 import {console} from "forge-std/Test.sol";
 
@@ -18,6 +19,7 @@ interface MockRoles {
 }
 
 contract PendleEBTCSYTest is SYTest {
+    PendleRescalingTokenFactory factory;
 
     function setUpFork() internal override {
         vm.createSelectFork("ethereum");
@@ -25,8 +27,9 @@ contract PendleEBTCSYTest is SYTest {
 
     function deploySY() internal override {
         vm.startPrank(deployer);
+        factory = new PendleRescalingTokenFactory();
 
-        address logic = address(new PendleEBTCBeraSYV2());
+        address logic = address(new PendleEBTCBeraSYV2(address(factory)));
         sy = IStandardizedYield(
             deployTransparentProxy(logic, deployer, abi.encodeCall(PendleEBTCBeraSYV2.initialize, ()))
         );

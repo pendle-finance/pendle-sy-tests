@@ -6,21 +6,25 @@ import {PendleBoringOneracle} from "pendle-core/oracles/internal/PendleBoringOne
 import {IStandardizedYield} from "pendle-sy/interfaces/IStandardizedYield.sol";
 import {ILBTCMinterBase} from "pendle-sy/interfaces/Lombard/ILBTCMinterBase.sol";
 import {PendleLBTCBaseSYV2} from "pendle-sy/core/StandardizedYield/implementations/Lombard/PendleLBTCBaseSYV2.sol";
-
+import {PendleRescalingTokenFactory} from "pendle-sy/core/Misc/PendleRescalingTokenFactory.sol";
 import {SYTest} from "../common/SYTest.t.sol";
 
 contract PendleLBTCBaseSYTest is SYTest {
     IERC20 cbbtc;
     ILBTCMinterBase minter;
+    PendleRescalingTokenFactory factory;
+
 
     function setUpFork() internal override {
-        vm.createSelectFork("https://base-mainnet.blastapi.io/6fa0353c-5dce-4f79-a3ea-bb2c9bf11ce7 ");
+        vm.createSelectFork("base");
     }
 
     function deploySY() internal override {
         vm.startPrank(deployer);
 
-        address logic = address(new PendleLBTCBaseSYV2());
+        factory = new PendleRescalingTokenFactory();
+
+        address logic = address(new PendleLBTCBaseSYV2(address(factory)));
         sy = IStandardizedYield(
             deployTransparentProxy(logic, deployer, abi.encodeCall(PendleLBTCBaseSYV2.initialize, ()))
         );
