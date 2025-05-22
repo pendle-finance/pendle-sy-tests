@@ -4,7 +4,7 @@
 [submodule "lib/pendle-sy"]
 	path = lib/pendle-sy
 	url = git@github.com:pendle-finance/pendle-sy.git
-	branch = ngfam/decimals-wrapper
+	branch = adapter/erc4626
 [submodule "lib/pendle-core"]
 	path = lib/pendle-core
 	url = git@github.com:pendle-finance/pendle-core-v2-public.git
