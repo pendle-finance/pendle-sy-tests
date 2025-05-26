@@ -5,7 +5,7 @@ import { HardhatUserConfig } from "hardhat/types";
 
 const config: HardhatUserConfig = {
     paths: {
-        sources: './lib',
+        sources: './src',
         tests: './test',
         artifacts: "./build/artifacts",
         cache: "./build/cache"
