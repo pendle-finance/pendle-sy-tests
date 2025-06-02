@@ -18,7 +18,14 @@ abstract contract MetadataTest is TestFoundation {
             assert(false);
         }
         console.log("Asset address:", assetAddress);
-        console.log("Asset symbol:", getSymbol(assetAddress));
+        
+        if (assetAddress == address(0)) {
+            console.log("Asset symbol: ETH");
+        } else if (assetAddress == address(1)) {
+            console.log("Asset symbol: Wrapped");
+        } else {
+            console.log("Asset symbol:", assetAddress);
+        }
         console.log("Asset decimals:", assetDecimals);
 
         address yieldToken = sy.yieldToken();

@@ -7,6 +7,7 @@ import {IStandardizedYield} from "pendle-sy/interfaces/IStandardizedYield.sol";
 import {ArrayHelpers} from "../helpers/ArrayHelpers.sol";
 import {DeployHelpers} from "../helpers/DeployHelpers.sol";
 import {TokenHelpers} from "../helpers/TokenHelpers.sol";
+import {ITransparentUpgradeableProxy} from "@openzeppelin/contracts/proxy/transparent/TransparentUpgradeableProxy.sol";
 
 abstract contract TestFoundation is ArrayHelpers, DeployHelpers, TokenHelpers, Test {
     address deployer;
@@ -45,6 +46,16 @@ abstract contract TestFoundation is ArrayHelpers, DeployHelpers, TokenHelpers, T
         } else {
             return 10 ** IERC20Metadata(token).decimals();
         }
+    }
+
+    function upgradeExistingProxy(
+        address proxy,
+        address newImplementation,
+        bytes memory data
+    ) internal virtual {
+        vm.startPrank(0xA28c08f165116587D4F3E708743B4dEe155c5E64);
+        ITransparentUpgradeableProxy(proxy).upgradeToAndCall(newImplementation, data);
+        vm.stopPrank();   
     }
 
     function deposit(

@@ -25,3 +25,4 @@ jspm_packages
 .pnp.*
 
 flattened_contracts/
+ignored_tests/
