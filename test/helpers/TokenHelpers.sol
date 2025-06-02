@@ -2,7 +2,8 @@
 pragma solidity ^0.8.28;
 
 import {IERC20, IERC20Metadata} from "@openzeppelin/contracts/token/ERC20/extensions/IERC20Metadata.sol";
-import {console, StdCheats} from "forge-std/Test.sol";
+import {console, StdCheats, TestBase} from "forge-std/Test.sol";
+
 
 abstract contract TokenHelpers is StdCheats {
     address internal constant NATIVE = address(0);
@@ -47,11 +48,4 @@ abstract contract TokenHelpers is StdCheats {
         }
     }
 
-    function fundToken(address wallet, address token, uint256 amount) internal virtual {
-        if (token == NATIVE) {
-            deal(wallet, amount);
-        } else {
-            deal(token, wallet, amount);
-        }
-    }
 }

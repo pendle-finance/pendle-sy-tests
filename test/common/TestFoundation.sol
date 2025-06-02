@@ -7,6 +7,7 @@ import {IStandardizedYield} from "pendle-sy/interfaces/IStandardizedYield.sol";
 import {ArrayHelpers} from "../helpers/ArrayHelpers.sol";
 import {DeployHelpers} from "../helpers/DeployHelpers.sol";
 import {TokenHelpers} from "../helpers/TokenHelpers.sol";
+import {IEtherFiLiquidityPool} from "pendle-sy/interfaces/EtherFi/IEtherFiLiquidityPool.sol";
 
 abstract contract TestFoundation is ArrayHelpers, DeployHelpers, TokenHelpers, Test {
     address deployer;
@@ -71,5 +72,19 @@ abstract contract TestFoundation is ArrayHelpers, DeployHelpers, TokenHelpers, T
     ) internal virtual returns (uint256 amountTokenOut) {
         vm.prank(wallet);
         amountTokenOut = sy.redeem(wallet, amountSharesIn, tokenOut, 0, false);
+    }
+
+
+    function fundToken(address wallet, address token, uint256 amount) internal virtual {
+        if (token == 0x35fA164735182de50811E8e2E824cFb9B6118ac2) {
+            vm.prank(wallet);
+            deal(wallet, amount);
+            IEtherFiLiquidityPool(0x308861A430be4cce5502d0A12724771Fc6DaF216).deposit{value: amount}(address(1));
+            vm.stopPrank();
+        } else if (token == NATIVE) {
+            deal(wallet, amount);
+        } else {
+            deal(token, wallet, amount);
+        }
     }
 }
