@@ -31,7 +31,7 @@ abstract contract PreviewTest is TestFoundation {
 
             fundToken(alice, tokenIn, amountIn);
 
-            uint256 amountOut = _executePreviewTest(alice, tokenIn, amountIn, tokenOut);
+            uint256 amountOut = _executePreviewTest(alice, tokenIn, amountIn, tokenOut, true);
             console.log("Amount out:", amountOut);
             console.log("");
 
@@ -45,7 +45,8 @@ abstract contract PreviewTest is TestFoundation {
         address wallet,
         address tokenIn,
         uint256 netTokenIn,
-        address tokenOut
+        address tokenOut,
+        bool inFirstExecution
     ) private returns (uint256) {
         uint256 depositIn = netTokenIn / 2;
         for (uint256 i = 0; i < 2; ++i) {
@@ -73,6 +74,24 @@ abstract contract PreviewTest is TestFoundation {
 
             totalAmountOut += actual;
         }
+
+        if (inFirstExecution && sy.isValidTokenIn(tokenOut) && sy.isValidTokenOut(tokenIn)) {
+            uint256 amountRoundTrip = _executePreviewTest(
+                wallet,
+                tokenOut,
+                totalAmountOut,
+                tokenIn,
+                false
+            );
+
+            uint256 delta = (amountRoundTrip > netTokenIn)
+                ? amountRoundTrip - netTokenIn
+                : netTokenIn - amountRoundTrip;
+
+            console.log("Round trip:", amountRoundTrip);
+            assertLt(delta, 10, "Amount round trip should be close to netTokenIn");
+        }
+
         return totalAmountOut;
     }
 
