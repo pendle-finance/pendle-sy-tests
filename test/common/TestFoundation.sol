@@ -48,14 +48,10 @@ abstract contract TestFoundation is ArrayHelpers, DeployHelpers, TokenHelpers, T
         }
     }
 
-    function upgradeExistingProxy(
-        address proxy,
-        address newImplementation,
-        bytes memory data
-    ) internal virtual {
+    function upgradeExistingProxy(address proxy, address newImplementation, bytes memory data) internal virtual {
         vm.startPrank(0xA28c08f165116587D4F3E708743B4dEe155c5E64);
         ITransparentUpgradeableProxy(proxy).upgradeToAndCall(newImplementation, data);
-        vm.stopPrank();   
+        vm.stopPrank();
     }
 
     function deposit(

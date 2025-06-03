@@ -16,6 +16,8 @@ abstract contract RewardsTest is TestFoundation {
         address alice = wallets[0];
 
         uint256 refAmount = refAmountFor(startToken);
+
+        console.log("Fund:", startToken, refAmount);
         fundToken(alice, startToken, refAmount);
         deposit(alice, startToken, refAmount);
 

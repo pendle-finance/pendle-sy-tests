@@ -18,7 +18,7 @@ abstract contract MetadataTest is TestFoundation {
             assert(false);
         }
         console.log("Asset address:", assetAddress);
-        
+
         if (assetAddress == address(0)) {
             console.log("Asset symbol: ETH");
         } else if (assetAddress == address(1)) {
