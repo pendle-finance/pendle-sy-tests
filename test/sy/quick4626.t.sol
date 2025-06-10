@@ -10,7 +10,7 @@ import {IStandardizedYield} from "pendle-sy/interfaces/IStandardizedYield.sol";
 
 contract Quick4626Test is SYTest {
     function setUpFork() internal override {
-        vm.createSelectFork("https://eth.llamarpc.com");
+        vm.createSelectFork("ethereum");
     }
 
     address public constant ERC4626_TOKEN = 0xe0a80d35bB6618CBA260120b279d357978c42BCE;

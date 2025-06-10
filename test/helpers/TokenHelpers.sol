@@ -51,7 +51,7 @@ abstract contract TokenHelpers is StdCheats {
         if (token == NATIVE) {
             deal(wallet, amount);
         } else {
-            deal(token, wallet, amount);
+            deal(token, wallet, amount, false);
         }
     }
 }

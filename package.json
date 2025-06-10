@@ -38,6 +38,7 @@
         "lint:nofix": "yarn eslint \"scripts/**/*.{ts,js}\" --quiet",
         "lint:script": "yarn lint:nofix --fix",
         "build:script": "yarn tsc --build",
-        "clean:script": "rm -r dist"
+        "clean:script": "rm -r dist",
+        "update:module": "git submodule update --remote && forge update"
     }
 }
