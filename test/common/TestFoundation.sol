@@ -8,6 +8,7 @@ import {ArrayHelpers} from "../helpers/ArrayHelpers.sol";
 import {DeployHelpers} from "../helpers/DeployHelpers.sol";
 import {TokenHelpers} from "../helpers/TokenHelpers.sol";
 import {ITransparentUpgradeableProxy} from "@openzeppelin/contracts/proxy/transparent/TransparentUpgradeableProxy.sol";
+import {console} from "forge-std/console.sol";
 
 abstract contract TestFoundation is ArrayHelpers, DeployHelpers, TokenHelpers, Test {
     address deployer;
@@ -69,7 +70,6 @@ abstract contract TestFoundation is ArrayHelpers, DeployHelpers, TokenHelpers, T
         } else {
             vm.prank(wallet);
             IERC20(tokenIn).approve(address(sy), amountTokenIn);
-
             vm.prank(wallet);
             amountSharesOut = sy.deposit(wallet, tokenIn, amountTokenIn, 0);
         }
