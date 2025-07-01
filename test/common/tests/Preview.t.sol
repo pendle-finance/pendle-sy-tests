@@ -4,6 +4,7 @@ pragma solidity ^0.8.28;
 import {console} from "forge-std/Test.sol";
 
 import {TestFoundation} from "../TestFoundation.sol";
+import "@openzeppelin/contracts/utils/Strings.sol";
 
 abstract contract PreviewTest is TestFoundation {
     uint256 internal constant DENOM = 17;
@@ -56,8 +57,8 @@ abstract contract PreviewTest is TestFoundation {
             uint256 actual = deposit(wallet, tokenIn, depositIn);
             uint256 earning = sy.balanceOf(wallet) - balanceBefore;
 
-            assertEq(earning, actual, "previewDeposit: actual != earning");
-            assertEq(preview, actual, "previewDeposit: preview != actual");
+            assertApprox(earning, actual, "previewDeposit: actual != earning | 59");
+            assertApprox(preview, actual, "previewDeposit: preview != actual | 60");
         }
 
         uint256 redeemIn = sy.balanceOf(wallet) / 2;
@@ -69,8 +70,8 @@ abstract contract PreviewTest is TestFoundation {
             uint256 actual = redeem(wallet, tokenOut, redeemIn);
             uint256 earning = getBalance(wallet, tokenOut) - balanceBefore;
 
-            assertEq(earning, actual, "previewRedeem: actual != earning");
-            assertEq(preview, actual, "previewRedeem: preview != actual");
+            assertApprox(earning, actual, "previewRedeem: actual != earning | 72");
+            assertApprox(preview, actual, "previewRedeem: preview != actual | 73");
 
             totalAmountOut += actual;
         }
@@ -101,5 +102,36 @@ abstract contract PreviewTest is TestFoundation {
 
     function getTokensOutForPreviewTest() internal view virtual returns (address[] memory) {
         return sy.getTokensOut();
+    }
+
+    function getPreviewTestAllowedDiff() internal pure virtual returns (uint256) {
+        return 0;
+    }
+
+    function assertApprox(
+        uint256 actual,
+        uint256 expected,
+        string memory message
+    ) internal pure {
+        uint256 allowDiff = getPreviewTestAllowedDiff();
+
+
+        message = string.concat(
+            message,
+            " | actual: ",
+            Strings.toString(actual),
+            ", expected: ",
+            Strings.toString(expected)
+        );
+
+        if (allowDiff == 0) {
+            assertEq(actual, expected, message);
+        } else {
+            assertLt(
+                actual > expected ? actual - expected : expected - actual,
+                allowDiff + 1,
+                message
+            );
+        }
     }
 }

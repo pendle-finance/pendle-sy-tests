@@ -30,7 +30,7 @@ contract Umbrella4626Test is SYTest {
                     UMBRELLA_DISTRIBUTOR
                 )),
                 deployer,
-                abi.encodeCall(PendleUmbrellaStake4626SY.initialize, ("SY Umbrella Stake 4626", "SY-UMBRL-4626"))
+                abi.encodeCall(PendleUmbrellaStake4626SY.initialize, ("SY Umbrella Stake 4626", "SY-UMBRL-4626", deployer))
             )
         );
 

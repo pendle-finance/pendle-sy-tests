@@ -4,7 +4,7 @@
 [submodule "lib/pendle-sy"]
 	path = lib/pendle-sy
 	url = git@github.com:pendle-finance/Pendle-SY-Public.git
-	branch = umbrella/stk-tokens
+	branch = impl/4626-scaled18
 [submodule "lib/pendle-core"]
 	path = lib/pendle-core
 	url = git@github.com:pendle-finance/pendle-core-v2-public.git
