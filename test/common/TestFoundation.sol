@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 pragma solidity ^0.8.28;
 
-import {Test, console} from "forge-std/Test.sol";
+import {Test} from "forge-std/Test.sol";
 import {IERC20, IERC20Metadata} from "@openzeppelin/contracts/token/ERC20/extensions/IERC20Metadata.sol";
 import {IStandardizedYield} from "pendle-sy/interfaces/IStandardizedYield.sol";
 import {ArrayHelpers} from "../helpers/ArrayHelpers.sol";
@@ -9,8 +9,11 @@ import {DeployHelpers} from "../helpers/DeployHelpers.sol";
 import {TokenHelpers} from "../helpers/TokenHelpers.sol";
 import {ITransparentUpgradeableProxy} from "@openzeppelin/contracts/proxy/transparent/TransparentUpgradeableProxy.sol";
 import {console} from "forge-std/console.sol";
+import {StdStyle} from "forge-std/StdStyle.sol";
 
 abstract contract TestFoundation is ArrayHelpers, DeployHelpers, TokenHelpers, Test {
+    using StdStyle for string;
+
     address deployer;
     address[] wallets;
 
@@ -35,9 +38,12 @@ abstract contract TestFoundation is ArrayHelpers, DeployHelpers, TokenHelpers, T
 
     function deploySY() internal virtual;
 
-    function initializeSY() internal virtual {
-        console.log("[-----initializeSY-----]");
-        console.log("[CHECK REQUIRED] Exchange rate after deployment:", sy.exchangeRate());
+    function initializeSY() internal virtual {}
+
+    function test_exchangeRateSanity() public view {
+        uint256 exchangeRate = sy.exchangeRate();
+        checkRequired(string.concat("Exchange rate: ", vm.toString(exchangeRate)));
+        assertGt(exchangeRate, 0, "Exchange rate should be greater than 0");
         console.log("");
     }
 
@@ -49,14 +55,10 @@ abstract contract TestFoundation is ArrayHelpers, DeployHelpers, TokenHelpers, T
         }
     }
 
-    function upgradeExistingProxy(
-        address proxy,
-        address newImplementation,
-        bytes memory data
-    ) internal virtual {
+    function upgradeExistingProxy(address proxy, address newImplementation, bytes memory data) internal virtual {
         vm.startPrank(0xA28c08f165116587D4F3E708743B4dEe155c5E64);
         ITransparentUpgradeableProxy(proxy).upgradeToAndCall(newImplementation, data);
-        vm.stopPrank();   
+        vm.stopPrank();
     }
 
     function deposit(
@@ -82,5 +84,9 @@ abstract contract TestFoundation is ArrayHelpers, DeployHelpers, TokenHelpers, T
     ) internal virtual returns (uint256 amountTokenOut) {
         vm.prank(wallet);
         amountTokenOut = sy.redeem(wallet, amountSharesIn, tokenOut, 0, false);
+    }
+
+    function checkRequired(string memory message) internal pure {
+        console.log(string.concat(string("[CHECK REQUIRED]").red().bold(), " ", message));
     }
 }
