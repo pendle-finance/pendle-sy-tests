@@ -31,7 +31,7 @@ abstract contract RewardsTest is TestFoundation {
 
             uint256 expected = rewardAmounts[i];
             uint256 actual = rewardBalancesAfter[i] - rewardBalancesBefore[i];
-            checkRequired(string.concat("Claimed ", vm.toString(actual), getSymbol(rewardTokens[i])));
+            checkRequired(string.concat("Claimed ", vm.toString(actual), " ", getSymbol(rewardTokens[i])));
             assertGt(actual, 0, "Claimed amount should be greater than 0");
             assertEq(
                 actual,
