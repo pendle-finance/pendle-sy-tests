@@ -25,7 +25,10 @@ abstract contract PreviewTest is TestFoundation {
         uint256 maxRoundTripDeltaRel = 0;
         uint256 totalRoundTripDeltaRel = 0;
 
+        uint256 cntRoundTripTest = 0;
+
         for (uint256 i = 0; i < testParams.length; ++i) {
+
             address tokenIn = testParams[i].tokenIn;
             address tokenOut = testParams[i].tokenOut;
             uint256 amountIn = testParams[i].netTokenIn;
@@ -44,6 +47,10 @@ abstract contract PreviewTest is TestFoundation {
                 uint256 amountRoundTrip,
                 uint256 roundTripDeltaAbs
             ) = _executePreviewTest(alice, tokenIn, amountIn, tokenOut);
+
+            if (doRoundTrip) {
+                cntRoundTripTest++;
+            }
 
             uint256 roundTripDeltaRel = PMath.divDown(roundTripDeltaAbs, amountIn);
             maxRoundTripDeltaAbs = PMath.max(maxRoundTripDeltaAbs, roundTripDeltaAbs);
@@ -65,9 +72,10 @@ abstract contract PreviewTest is TestFoundation {
 
         checkRequired("Summary");
         console.log("Total tests                    :", testParams.length);
+        console.log("Total round trip tests         :", cntRoundTripTest);
         // console.log("Max round trip delta abs:", maxRoundTripDeltaAbs);
         console.log("Max round trip delta rel       : %18e", maxRoundTripDeltaRel);
-        console.log("Average round trip delta rel   : %18e", totalRoundTripDeltaRel / testParams.length);
+        console.log("Average round trip delta rel   : %18e", totalRoundTripDeltaRel / cntRoundTripTest);
 
         console.log("");
     }
@@ -119,11 +127,15 @@ abstract contract PreviewTest is TestFoundation {
         doRoundTrip = sy.isValidTokenIn(tokenOut) && sy.isValidTokenOut(tokenIn);
         if (doRoundTrip) {
             amountRoundTrip = _executePreviewTestOnce(wallet, tokenOut, totalAmountOut, tokenIn);
-
             roundTripDeltaAbs = stdMath.delta(amountRoundTrip, netTokenIn);
 
             if (!hasFee()) {
-                assertLt(roundTripDeltaAbs, 10, "Amount round trip should be close to netTokenIn");
+                assertApprox(
+                    amountRoundTrip,
+                    netTokenIn,
+                    getDecimals(tokenIn),
+                    "amountRoundTrip should be close to netTokenIn | 50"
+                );
             }
         }
     }
@@ -179,11 +191,11 @@ abstract contract PreviewTest is TestFoundation {
 
     function assertApprox(uint256 actual, uint256 expected, uint8 decimal, string memory message) internal pure {
         uint256 allowDiff = getPreviewTestAllowedDiff();
-
         if (allowDiff == 0) {
             assertEqDecimal(actual, expected, decimal, message);
         } else {
-            assertApproxEqAbsDecimal(actual, expected, allowDiff + 1, decimal, message);
+            uint256 allowDiffAbs = PMath.mulDown(expected, allowDiff);
+            assertApproxEqAbsDecimal(actual, expected, allowDiffAbs, decimal, message);
         }
     }
 
