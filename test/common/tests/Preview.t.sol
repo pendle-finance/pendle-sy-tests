@@ -116,7 +116,7 @@ abstract contract PreviewTest is TestFoundation {
     ) private returns (uint256 totalAmountOut, bool doRoundTrip, uint256 amountRoundTrip, uint256 roundTripDeltaAbs) {
         totalAmountOut = _executePreviewTestOnce(wallet, tokenIn, netTokenIn, tokenOut);
 
-        doRoundTrip = sy.isValidTokenIn(tokenIn) && sy.isValidTokenOut(tokenOut);
+        doRoundTrip = sy.isValidTokenIn(tokenOut) && sy.isValidTokenOut(tokenIn);
         if (doRoundTrip) {
             amountRoundTrip = _executePreviewTestOnce(wallet, tokenOut, totalAmountOut, tokenIn);
 
