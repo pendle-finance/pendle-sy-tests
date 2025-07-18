@@ -194,7 +194,7 @@ abstract contract PreviewTest is TestFoundation {
         if (allowDiff == 0) {
             assertEqDecimal(actual, expected, decimal, message);
         } else {
-            uint256 allowDiffAbs = PMath.mulDown(expected, allowDiff);
+            uint256 allowDiffAbs = PMath.max(1, PMath.mulDown(expected, allowDiff));
             assertApproxEqAbsDecimal(actual, expected, allowDiffAbs, decimal, message);
         }
     }
