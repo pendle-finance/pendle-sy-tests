@@ -54,4 +54,11 @@ abstract contract TokenHelpers is StdCheats {
             deal(token, wallet, amount, false);
         }
     }
+
+    /// @notice Approves the stipulated contract to spend the given allowance in the given token
+    /// @dev PLS PAY ATTENTION to tokens that requires the approval to be set to 0 before changing it
+    function safeApprove(address token, address to, uint256 value) internal {
+        (bool success, bytes memory data) = token.call(abi.encodeWithSelector(IERC20.approve.selector, to, value));
+        require(success && (data.length == 0 || abi.decode(data, (bool))), "Safe Approve");
+    }
 }
