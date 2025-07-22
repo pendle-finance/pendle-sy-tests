@@ -184,16 +184,16 @@ abstract contract PreviewTest is TestFoundation {
         return sy.getTokensOut();
     }
 
-    function getPreviewTestAllowedDiff() internal pure virtual returns (uint256) {
+    function getPreviewTestAllowedEps() internal pure virtual returns (uint256) {
         return 0;
     }
 
     function assertApprox(uint256 actual, uint256 expected, uint8 decimal, string memory message) internal pure {
-        uint256 allowDiff = getPreviewTestAllowedDiff();
-        if (allowDiff == 0) {
+        uint256 allowedEps = getPreviewTestAllowedEps();
+        if (allowedEps == 0) {
             assertEqDecimal(actual, expected, decimal, message);
         } else {
-            uint256 allowDiffAbs = PMath.max(1, PMath.mulDown(expected, allowDiff));
+            uint256 allowDiffAbs = PMath.max(1, PMath.mulDown(expected, allowedEps));
             assertApproxEqAbsDecimal(actual, expected, allowDiffAbs, decimal, message);
         }
     }

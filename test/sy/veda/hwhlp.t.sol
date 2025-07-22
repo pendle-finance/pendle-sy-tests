@@ -30,7 +30,7 @@ contract HwHLPTest is SYTest {
         startToken = PendleHwHLPSY(payable(address(sy))).USDT();
     }
 
-    function getPreviewTestAllowedDiff() internal pure virtual override returns (uint256) {
+    function getPreviewTestAllowedEps() internal pure virtual override returns (uint256) {
         return 1e12;
     }
 
