@@ -1,14 +1,13 @@
-import "@nomicfoundation/hardhat-toolbox"
-import "@nomicfoundation/hardhat-foundry"
-import { HardhatUserConfig } from "hardhat/types";
-
+import '@nomicfoundation/hardhat-foundry';
+import '@nomicfoundation/hardhat-toolbox';
+import {HardhatUserConfig} from 'hardhat/types';
 
 const config: HardhatUserConfig = {
     paths: {
         sources: './src',
         tests: './test',
-        artifacts: "./build/artifacts",
-        cache: "./build/cache"
+        artifacts: './build/artifacts',
+        cache: './build/cache',
     },
     solidity: {
         compilers: [
@@ -19,12 +18,11 @@ const config: HardhatUserConfig = {
                         enabled: true,
                         runs: 0,
                     },
-                    evmVersion: 'paris'
+                    evmVersion: 'paris',
                 },
-            }
+            },
         ],
-        overrides: {
-        },
+        overrides: {},
     },
 };
 

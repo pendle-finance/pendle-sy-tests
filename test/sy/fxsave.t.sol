@@ -2,9 +2,7 @@
 pragma solidity ^0.8.28;
 
 import {SYTest} from "../common/SYTest.t.sol";
-import {
-    PendleFXSaveSY
-} from "pendle-sy/core/StandardizedYield/implementations/FX/PendleFXSaveSY.sol";
+import {PendleFXSaveSY} from "pendle-sy/core/StandardizedYield/implementations/FX/PendleFXSaveSY.sol";
 import {IStandardizedYield} from "pendle-sy/interfaces/IStandardizedYield.sol";
 
 contract FxSaveTest is SYTest {
@@ -23,9 +21,7 @@ contract FxSaveTest is SYTest {
             logic,
             abi.encodeWithSelector(PendleFXSaveSY.approveForCurvePool.selector)
         );
-        sy = IStandardizedYield(
-            0x13945B761B2Ed3219A497a46D15a8923f418d2ab
-        );
+        sy = IStandardizedYield(0x13945B761B2Ed3219A497a46D15a8923f418d2ab);
     }
 
     function initializeSY() internal override {

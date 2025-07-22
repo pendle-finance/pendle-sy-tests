@@ -6,7 +6,9 @@ import {
     PendleERC4626UpgSYV2,
     IERC4626
 } from "pendle-sy/core/StandardizedYield/implementations/PendleERC4626UpgSYV2.sol";
-import { PendleERC4626NoRedeemUpgSY } from "pendle-sy/core/StandardizedYield/implementations/PendleERC4626NoRedeemUpgSY.sol";
+import {
+    PendleERC4626NoRedeemUpgSY
+} from "pendle-sy/core/StandardizedYield/implementations/PendleERC4626NoRedeemUpgSY.sol";
 import {IStandardizedYield} from "pendle-sy/interfaces/IStandardizedYield.sol";
 
 contract Quick4626Test is SYTest {
@@ -20,8 +22,6 @@ contract Quick4626Test is SYTest {
     function deploySY() internal override {
         vm.startPrank(deployer);
 
-
-
         sy = IStandardizedYield(
             deployTransparentProxy(
                 deployImpl(),
@@ -34,7 +34,7 @@ contract Quick4626Test is SYTest {
     }
 
     function deployImpl() internal returns (address) {
-        address logic1 =  address(new PendleERC4626NoRedeemUpgSY(ERC4626_TOKEN));
+        address logic1 = address(new PendleERC4626NoRedeemUpgSY(ERC4626_TOKEN));
         address logic2 = address(new PendleERC4626UpgSYV2(ERC4626_TOKEN));
         return IS_REDEEMABLE ? logic2 : logic1;
     }

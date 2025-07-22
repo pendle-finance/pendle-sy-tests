@@ -2,13 +2,10 @@
 pragma solidity ^0.8.28;
 
 import {SYTest} from "../common/SYTest.t.sol";
-import {
-    PendleL2LRTUpgSY
-} from "pendle-sy/core/StandardizedYield/implementations/PendleL2LRTUpgSY.sol";
+import {PendleL2LRTUpgSY} from "pendle-sy/core/StandardizedYield/implementations/PendleL2LRTUpgSY.sol";
 import {PendleRedStoneRateOracleAdapter} from "pendle-core/oracles/internal/PendleRedStoneRateOracleAdapter.sol";
 
 import {IStandardizedYield} from "pendle-sy/interfaces/IStandardizedYield.sol";
-
 
 contract L2LRTTest is SYTest {
     function setUpFork() internal override {
@@ -21,10 +18,7 @@ contract L2LRTTest is SYTest {
     function deploySY() internal override {
         vm.startPrank(deployer);
 
-        address oracle = address(new PendleRedStoneRateOracleAdapter(
-            CHAINLINK,
-            18
-        ));
+        address oracle = address(new PendleRedStoneRateOracleAdapter(CHAINLINK, 18));
 
         sy = IStandardizedYield(
             deployTransparentProxy(
@@ -37,7 +31,6 @@ contract L2LRTTest is SYTest {
         vm.stopPrank();
     }
 
-    
     function initializeSY() internal override {
         super.initializeSY();
         startToken = L2_LRT_TOKEN;

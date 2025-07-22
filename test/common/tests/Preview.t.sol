@@ -28,7 +28,6 @@ abstract contract PreviewTest is TestFoundation {
         uint256 cntRoundTripTest = 0;
 
         for (uint256 i = 0; i < testParams.length; ++i) {
-
             address tokenIn = testParams[i].tokenIn;
             address tokenOut = testParams[i].tokenOut;
             uint256 amountIn = testParams[i].netTokenIn;

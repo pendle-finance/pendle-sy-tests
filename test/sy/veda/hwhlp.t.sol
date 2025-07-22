@@ -17,7 +17,7 @@ contract HwHLPTest is SYTest {
         sy = IStandardizedYield(
             deployTransparentProxy(
                 address(new PendleHwHLPSY()),
-                deployer,
+                address(1),
                 abi.encodeCall(PendleHwHLPSY.initialize, ("SY HWHLP", "SY HWHLP", deployer, 10 ** 12))
             )
         );
@@ -34,4 +34,7 @@ contract HwHLPTest is SYTest {
         return 1e12;
     }
 
+    function hasSupplyCap() internal pure virtual override returns (bool) {
+        return true;
+    }
 }
