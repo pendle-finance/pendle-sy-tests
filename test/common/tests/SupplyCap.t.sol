@@ -11,8 +11,26 @@ import {SafeERC20} from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol
 abstract contract SupplyCapTest is TestFoundation {
     using SafeERC20 for IERC20;
 
+    enum SupplyCapType {
+        None,
+        Underlying,
+        BuiltIn
+    }
+
     function test_supply_cap() public {
-        vm.skip(!hasSupplyCap());
+
+        if (getSupplyCapType() == SupplyCapType.None) {
+            vm.skip(true);
+        }
+
+        uint256 supplyCap = TokenWithSupplyCapUpg(address(sy)).getAbsoluteSupplyCap();
+        uint256 supply = TokenWithSupplyCapUpg(address(sy)).getAbsoluteTotalSupply();
+
+        checkRequired(string.concat("Init cap: [", vm.toString(supply), " / ", vm.toString(supplyCap), "]"));
+
+        if (getSupplyCapType() != SupplyCapType.BuiltIn) {
+            return;
+        }
 
         console.log("[-----test_supply_cap-----]");
 
@@ -42,7 +60,8 @@ abstract contract SupplyCapTest is TestFoundation {
         vm.stopPrank();
     }
 
-    function hasSupplyCap() internal pure virtual returns (bool) {
-        return false;
+    function getSupplyCapType() internal pure virtual returns (SupplyCapType) {
+        // return false;
+        return SupplyCapType.None;
     }
 }
