@@ -45,8 +45,6 @@ abstract contract SupplyCapTest is TestFoundation {
 
         vm.startPrank(alice);
 
-        console.logBytes4(TokenWithSupplyCapUpg.SupplyCapExceeded.selector);
-
         if (startToken == address(0)) {
             vm.expectPartialRevert(TokenWithSupplyCapUpg.SupplyCapExceeded.selector);
             sy.deposit{value: refAmount}(alice, startToken, refAmount, 0);
