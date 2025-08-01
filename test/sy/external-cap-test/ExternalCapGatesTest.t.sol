@@ -36,14 +36,16 @@ abstract contract ExternalCapGatesTest is Test, DeployHelpers {
     function setUpSYExternalCap() internal virtual;
 
     function test_externalCap_absoluteSupplyCap_success() public view {
+        console.log("Absolute Supply Cap: %d", externalCapGates.getAbsoluteSupplyCap(address(sy)));
         assertEq(externalCapGates.getAbsoluteSupplyCap(address(sy)), externalCap.getAbsoluteSupplyCap());
     }
 
     function test_externalCap_absoluteTotalSupply_success() public view {
+        console.log("Absolute Supply Cap: %d", externalCapGates.getAbsoluteTotalSupply(address(sy)));
         assertEq(externalCapGates.getAbsoluteTotalSupply(address(sy)), externalCap.getAbsoluteTotalSupply());
     }
 
     function test_externalCap_setInGate() public view {
-        assertEq(externalCapGates.syToExternalCap(address(sy)), address(externalCap));
+        assertEq(externalCapGates.externalCapContracts(address(sy)), address(externalCap));
     }
 }
