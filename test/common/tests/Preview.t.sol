@@ -147,12 +147,13 @@ abstract contract PreviewTest is TestFoundation {
         uint256 netTokenIn,
         address tokenOut
     ) internal returns (uint256) {
-        uint256 depositIn = netTokenIn / 2;
+        console.log("NET IN: ", netTokenIn);
+        uint256[] memory depositIn = _prepareAmounts(netTokenIn, 2);
         for (uint256 i = 0; i < 2; ++i) {
             uint256 balanceBefore = sy.balanceOf(wallet);
 
-            uint256 preview = sy.previewDeposit(tokenIn, depositIn);
-            uint256 actual = deposit(wallet, tokenIn, depositIn);
+            uint256 preview = sy.previewDeposit(tokenIn, depositIn[i]);
+            uint256 actual = deposit(wallet, tokenIn, depositIn[i]);
             uint256 earning = sy.balanceOf(wallet) - balanceBefore;
             uint8 decimals = sy.decimals();
 
@@ -160,13 +161,13 @@ abstract contract PreviewTest is TestFoundation {
             assertApprox(preview, actual, decimals, "previewDeposit: preview != actual | 60");
         }
 
-        uint256 redeemIn = sy.balanceOf(wallet) / 2;
+        uint256[] memory redeemIn = _prepareAmounts(sy.balanceOf(wallet), 2);
         uint256 totalAmountOut = 0;
         for (uint256 i = 0; i < 2; ++i) {
             uint256 balanceBefore = getBalance(wallet, tokenOut);
 
-            uint256 preview = sy.previewRedeem(tokenOut, redeemIn);
-            uint256 actual = redeem(wallet, tokenOut, redeemIn);
+            uint256 preview = sy.previewRedeem(tokenOut, redeemIn[i]);
+            uint256 actual = redeem(wallet, tokenOut, redeemIn[i]);
             uint256 earning = getBalance(wallet, tokenOut) - balanceBefore;
             uint8 decimals = getDecimals(tokenOut);
 
@@ -175,6 +176,7 @@ abstract contract PreviewTest is TestFoundation {
 
             totalAmountOut += actual;
         }
+        console.log("TOTAL OUT: ", totalAmountOut);
         return totalAmountOut;
     }
 
