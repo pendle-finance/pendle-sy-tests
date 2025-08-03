@@ -7,7 +7,7 @@ import {IStandardizedYield} from "pendle-sy/interfaces/IStandardizedYield.sol";
 
 contract FxSaveTest is SYTest {
     function setUpFork() internal override {
-        vm.createSelectFork("https://eth.llamarpc.com", 22564829);
+        vm.createSelectFork("ethereum", 22564829);
     }
 
     function deploySY() internal override {

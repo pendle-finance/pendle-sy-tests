@@ -24,7 +24,7 @@ contract PendleGlpSYTest is SYTest {
     IRewardRouterV2 glpRewardRouter;
 
     function setUpFork() internal override {
-        vm.createSelectFork("https://arbitrum-one.public.blastapi.io", 189565902);
+        vm.createSelectFork("arbitrum");
     }
 
     function deploySY() internal override {
