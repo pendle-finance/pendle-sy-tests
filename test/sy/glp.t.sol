@@ -24,7 +24,7 @@ contract PendleGlpSYTest is SYTest {
     IRewardRouterV2 glpRewardRouter;
 
     function setUpFork() internal override {
-        vm.createSelectFork("arbitrum");
+        vm.createSelectFork("arbitrum", 189565902);
     }
 
     function deploySY() internal override {
@@ -87,6 +87,10 @@ contract PendleGlpSYTest is SYTest {
     }
 
     function hasReward() internal pure override returns (bool) {
+        return true;
+    }
+
+    function hasFee() internal pure override returns (bool) {
         return true;
     }
 }
