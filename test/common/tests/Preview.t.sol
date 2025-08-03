@@ -42,12 +42,8 @@ abstract contract PreviewTest is TestFoundation {
 
             fundToken(alice, tokenIn, amountIn);
 
-            (
-                uint256 amountOut,
-                bool doRoundTrip,
-                uint256 amountRoundTrip,
-                uint256 roundTripDeltaAbs
-            ) = _executePreviewTest(alice, tokenIn, amountIn, tokenOut);
+            (uint256 amountOut, bool doRoundTrip, uint256 amountRoundTrip, uint256 roundTripDeltaAbs) =
+                _executePreviewTest(alice, tokenIn, amountIn, tokenOut);
 
             if (doRoundTrip) {
                 cntRoundTripTest++;
@@ -117,14 +113,11 @@ abstract contract PreviewTest is TestFoundation {
         return params;
     }
 
-    function _executePreviewTest(
-        address wallet,
-        address tokenIn,
-        uint256 netTokenIn,
-        address tokenOut
-    ) private returns (uint256 totalAmountOut, bool doRoundTrip, uint256 amountRoundTrip, uint256 roundTripDeltaAbs) {
+    function _executePreviewTest(address wallet, address tokenIn, uint256 netTokenIn, address tokenOut)
+        private
+        returns (uint256 totalAmountOut, bool doRoundTrip, uint256 amountRoundTrip, uint256 roundTripDeltaAbs)
+    {
         totalAmountOut = _executePreviewTestOnce(wallet, tokenIn, netTokenIn, tokenOut);
-
         doRoundTrip = sy.isValidTokenIn(tokenOut) && sy.isValidTokenOut(tokenIn);
         if (doRoundTrip) {
             amountRoundTrip = _executePreviewTestOnce(wallet, tokenOut, totalAmountOut, tokenIn);
@@ -137,17 +130,22 @@ abstract contract PreviewTest is TestFoundation {
                     getDecimals(tokenIn),
                     "amountRoundTrip should be close to netTokenIn | 50"
                 );
+            } else {
+                uint256 amountInAfterRoundTrip = _calcFeeRoundTrip(netTokenIn, tokenIn, tokenOut);
+                assertApprox(
+                    amountRoundTrip,
+                    amountInAfterRoundTrip,
+                    getDecimals(tokenIn),
+                    "amountRoundTrip should be close to amountInAfterRoundTrip | 51"
+                );
             }
         }
     }
 
-    function _executePreviewTestOnce(
-        address wallet,
-        address tokenIn,
-        uint256 netTokenIn,
-        address tokenOut
-    ) internal returns (uint256) {
-        console.log("NET IN: ", netTokenIn);
+    function _executePreviewTestOnce(address wallet, address tokenIn, uint256 netTokenIn, address tokenOut)
+        internal
+        returns (uint256)
+    {
         uint256[] memory depositIn = _prepareAmounts(netTokenIn, 2);
         for (uint256 i = 0; i < 2; ++i) {
             uint256 balanceBefore = sy.balanceOf(wallet);
@@ -176,7 +174,6 @@ abstract contract PreviewTest is TestFoundation {
 
             totalAmountOut += actual;
         }
-        console.log("TOTAL OUT: ", totalAmountOut);
         return totalAmountOut;
     }
 
@@ -186,6 +183,36 @@ abstract contract PreviewTest is TestFoundation {
 
     function getTokensOutForPreviewTest() internal view virtual returns (address[] memory) {
         return sy.getTokensOut();
+    }
+
+    function getTokensInFeeForPreviewTest() internal view virtual returns (uint256[] memory) {
+        uint256[] memory fees = new uint256[](getTokensInForPreviewTest().length);
+        return fees;
+    }
+
+    function getTokensOutFeeForPreviewTest() internal view virtual returns (uint256[] memory) {
+        uint256[] memory fees = new uint256[](getTokensOutForPreviewTest().length);
+        return fees;
+    }
+
+    function getTokenInFee(address tokenIn) internal view returns (uint256) {
+        address[] memory tokensIn = getTokensInForPreviewTest();
+        for (uint256 i = 0; i < tokensIn.length; i++) {
+            if (tokensIn[i] == tokenIn) {
+                return getTokensInFeeForPreviewTest()[i];
+            }
+        }
+        revert("Token In invalid");
+    }
+
+    function getTokenOutFee(address tokenOut) internal view returns (uint256) {
+        address[] memory tokensOut = getTokensOutForPreviewTest();
+        for (uint256 i = 0; i < tokensOut.length; i++) {
+            if (tokensOut[i] == tokenOut) {
+                return getTokensOutFeeForPreviewTest()[i];
+            }
+        }
+        revert("Token Out invalid");
     }
 
     function getPreviewTestAllowedEps() internal pure virtual returns (uint256) {
@@ -208,5 +235,13 @@ abstract contract PreviewTest is TestFoundation {
 
     function skipPreviewTest() internal pure virtual returns (bool) {
         return false;
+    }
+
+    function _calcFeeRoundTrip(uint256 amountIn, address tokenIn, address tokenOut) internal view returns (uint256) {
+        uint256 res = PMath.mulDown(amountIn, PMath.ONE - getTokenInFee(tokenIn));
+        res = PMath.mulDown(res, PMath.ONE - getTokenOutFee(tokenOut));
+        res = PMath.mulDown(res, PMath.ONE - getTokenInFee(tokenOut));
+        res = PMath.mulDown(res, PMath.ONE - getTokenOutFee(tokenIn));
+        return res;
     }
 }
