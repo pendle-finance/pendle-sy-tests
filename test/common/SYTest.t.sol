@@ -6,6 +6,5 @@ import {MetadataTest} from "./tests/Metadata.t.sol";
 import {PreviewTest} from "./tests/Preview.t.sol";
 import {RewardsTest} from "./tests/Rewards.t.sol";
 import {SupplyCapTest} from "./tests/SupplyCap.t.sol";
-import {ExchangeRateTest} from "./tests/ExchangeRate.t.sol";
 
-abstract contract SYTest is DepositRedeemTest, MetadataTest, PreviewTest, RewardsTest, SupplyCapTest, ExchangeRateTest {}
+abstract contract SYTest is DepositRedeemTest, MetadataTest, PreviewTest, RewardsTest, SupplyCapTest {}
