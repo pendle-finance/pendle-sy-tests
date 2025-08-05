@@ -41,6 +41,26 @@ abstract contract TestFoundation is ArrayHelpers, DeployHelpers, TokenHelpers, T
 
     function initializeSY() internal virtual {}
 
+    function test_exchangeRateSanity() public view {
+        uint256 exchangeRate = sy.exchangeRate();
+
+        uint256 decimalsSY = IERC20Metadata(address(sy)).decimals();
+        (, , uint8 decimalsAsset) = sy.assetInfo();
+
+        uint256 amtAsset = ((10 ** decimalsSY) * sy.exchangeRate()) / (10 ** 18);
+        uint256 amtAsset18 = amtAsset;
+        if (decimalsAsset < 18) {
+            amtAsset18 = amtAsset * (10 ** (18 - decimalsAsset));
+        } else if (decimalsAsset > 18) {
+            amtAsset18 = amtAsset / (10 ** (decimalsAsset - 18));
+        }
+
+        checkRequired(string.concat("Exchange rate: ", vm.toString(exchangeRate)));
+        console.log("                 1 SY = %18e asset", amtAsset18);
+
+        assertGt(exchangeRate, 0, "Exchange rate should be greater than 0");
+    }
+
     function refAmountFor(address token) internal view virtual returns (uint256) {
         if (token == NATIVE) {
             return 1 ether;
