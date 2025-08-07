@@ -79,7 +79,15 @@ contract PendleKinetiqVKHYPESYTest is SYTest {
         uint256 amountIn = 10 ** 18;
         deal(tokenIn, deployer, amountIn);
         uint256 currentTotalSupply = IPTokenWithSupplyCap(address(sy)).getAbsoluteTotalSupply();
-        uint256 fakeCap = currentTotalSupply + amountIn * (10 ** 18) / IVedaAccountant(accountant).getRateInQuoteSafe(tokenIn) - 1;
+        uint256 estimatedSharesReceived = amountIn * (10 ** 18) / IVedaAccountant(accountant).getRateInQuoteSafe(tokenIn);
+        uint256 fakeCap = currentTotalSupply + estimatedSharesReceived - 1;
+
+        console.log("TokenIn: ", getSymbol(tokenIn));
+        console.log("AmountIn: ", amountIn);
+        console.log("Estimated Shares Received: ", estimatedSharesReceived);
+        console.log("Current Total Supply: ", currentTotalSupply);
+        console.log("Supply Cap: ", fakeCap);
+        console.log("Shares can be minted: ", fakeCap - currentTotalSupply);
 
         vm.mockCall(
             teller,
@@ -89,18 +97,26 @@ contract PendleKinetiqVKHYPESYTest is SYTest {
             abi.encode(fakeCap)
         );  
 
-        uint256 newSupply = currentTotalSupply + amountIn * (10 ** 18) / IVedaAccountant(accountant).getRateInQuoteSafe(tokenIn);
+        uint256 newSupply = currentTotalSupply + estimatedSharesReceived;
 
         vm.expectRevert(abi.encodeWithSelector(PendleKinetiqVKHYPESY.SupplyCapExceeded.selector, newSupply, fakeCap));
         sy.previewDeposit(tokenIn, amountIn);
     }
 
     function test_cap_asset_revertDeposit() external {
-        address tokenIn = KHYPE;
+        address tokenIn = WHYPE;
         uint256 amountIn = 10 ** 18;
         deal(tokenIn, deployer, amountIn);
         uint256 currentTotalSupply = IPTokenWithSupplyCap(address(sy)).getAbsoluteTotalSupply();
-        uint256 fakeCap = currentTotalSupply + amountIn * (10 ** 18) / IVedaAccountant(accountant).getRateInQuoteSafe(tokenIn) - 1;
+        uint256 estimatedSharesReceived = amountIn * (10 ** 18) / IVedaAccountant(accountant).getRateInQuoteSafe(tokenIn);
+        uint256 fakeCap = currentTotalSupply + estimatedSharesReceived - 1;
+
+        console.log("TokenIn: ", getSymbol(tokenIn));
+        console.log("AmountIn: ", amountIn);
+        console.log("Estimated Shares Received: ", estimatedSharesReceived);
+        console.log("Current Total Supply: ", currentTotalSupply);
+        console.log("Supply Cap: ", fakeCap);
+        console.log("Shares can be minted: ", fakeCap - currentTotalSupply);
 
         vm.mockCall(
             teller,
