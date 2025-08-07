@@ -17,6 +17,8 @@ abstract contract PreviewTest is TestFoundation {
     }
 
     function test_preview_depositThenRedeem() public {
+        vm.skip(skipPreviewTest(), "Skipped preview test. Be sure its not a new one.");
+
         PreviewDepositThenRedeemTestParam[] memory testParams = _genPreviewDepositThenRedeemTestParams();
         console.log("[-----test_preview_depositThenRedeem-----]");
 
@@ -199,6 +201,10 @@ abstract contract PreviewTest is TestFoundation {
     }
 
     function hasFee() internal pure virtual returns (bool) {
+        return false;
+    }
+
+    function skipPreviewTest() internal pure virtual returns (bool) {
         return false;
     }
 }
