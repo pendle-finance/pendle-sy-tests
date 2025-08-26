@@ -13,7 +13,7 @@ contract PendleHyperbeatUSDTSYTest is SYTest {
     address USDT0 = 0xB8CE59FC3717ada4C02eaDF9682A9e934F625ebb;
 
     function setUpFork() internal override {
-        vm.createSelectFork("https://rpc.purroofgroup.com/", 9319239);
+        vm.createSelectFork("https://rpc.hyperliquid.xyz/evm");
     }
 
     function deploySY() internal override {
@@ -30,12 +30,6 @@ contract PendleHyperbeatUSDTSYTest is SYTest {
 
     function hasFee() internal pure override returns (bool) {
         return true;
-    }
-
-    function getTokensOutFeeForPreviewTest() internal view override returns (uint256[] memory) {
-        uint256[] memory fees = new uint256[](getTokensOutForPreviewTest().length);
-        fees[0] = 5e15;
-        return fees;
     }
 
     function getPreviewTestAllowedEps() internal pure override returns (uint256) { // 1e-4

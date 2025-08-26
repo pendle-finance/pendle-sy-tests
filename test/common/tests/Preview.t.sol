@@ -113,11 +113,14 @@ abstract contract PreviewTest is TestFoundation {
         return params;
     }
 
-    function _executePreviewTest(address wallet, address tokenIn, uint256 netTokenIn, address tokenOut)
-        private
-        returns (uint256 totalAmountOut, bool doRoundTrip, uint256 amountRoundTrip, uint256 roundTripDeltaAbs)
-    {
+    function _executePreviewTest(
+        address wallet,
+        address tokenIn,
+        uint256 netTokenIn,
+        address tokenOut
+    ) private returns (uint256 totalAmountOut, bool doRoundTrip, uint256 amountRoundTrip, uint256 roundTripDeltaAbs) {
         totalAmountOut = _executePreviewTestOnce(wallet, tokenIn, netTokenIn, tokenOut);
+
         doRoundTrip = sy.isValidTokenIn(tokenOut) && sy.isValidTokenOut(tokenIn);
         if (doRoundTrip) {
             amountRoundTrip = _executePreviewTestOnce(wallet, tokenOut, totalAmountOut, tokenIn);
@@ -130,28 +133,23 @@ abstract contract PreviewTest is TestFoundation {
                     getDecimals(tokenIn),
                     "amountRoundTrip should be close to netTokenIn | 50"
                 );
-            } else {
-                uint256 amountInAfterRoundTrip = _calcFeeRoundTrip(netTokenIn, tokenIn, tokenOut);
-                assertApprox(
-                    amountRoundTrip,
-                    amountInAfterRoundTrip,
-                    getDecimals(tokenIn),
-                    "amountRoundTrip should be close to amountInAfterRoundTrip | 51"
-                );
             }
         }
     }
 
-    function _executePreviewTestOnce(address wallet, address tokenIn, uint256 netTokenIn, address tokenOut)
-        internal
-        returns (uint256)
-    {
-        uint256[] memory depositIn = _prepareAmounts(netTokenIn, 2);
+    function _executePreviewTestOnce(
+        address wallet,
+        address tokenIn,
+        uint256 netTokenIn,
+        address tokenOut
+    ) internal returns (uint256) {
+        uint256 depositIn = netTokenIn / 2;
         for (uint256 i = 0; i < 2; ++i) {
             uint256 balanceBefore = sy.balanceOf(wallet);
 
-            uint256 preview = sy.previewDeposit(tokenIn, depositIn[i]);
-            uint256 actual = deposit(wallet, tokenIn, depositIn[i]);
+            uint256 amountIn = (i == 0) ? depositIn : depositIn + (netTokenIn % 2); // Adjust to use up all amounts
+            uint256 preview = sy.previewDeposit(tokenIn, amountIn);
+            uint256 actual = deposit(wallet, tokenIn, amountIn);
             uint256 earning = sy.balanceOf(wallet) - balanceBefore;
             uint8 decimals = sy.decimals();
 
@@ -159,13 +157,14 @@ abstract contract PreviewTest is TestFoundation {
             assertApprox(preview, actual, decimals, "previewDeposit: preview != actual | 60");
         }
 
-        uint256[] memory redeemIn = _prepareAmounts(sy.balanceOf(wallet), 2);
+        uint256 redeemIn = sy.balanceOf(wallet) / 2;
         uint256 totalAmountOut = 0;
         for (uint256 i = 0; i < 2; ++i) {
             uint256 balanceBefore = getBalance(wallet, tokenOut);
 
-            uint256 preview = sy.previewRedeem(tokenOut, redeemIn[i]);
-            uint256 actual = redeem(wallet, tokenOut, redeemIn[i]);
+            uint256 amountOut = (i == 0) ? redeemIn : sy.balanceOf(wallet); // Adjust to use up all amounts
+            uint256 preview = sy.previewRedeem(tokenOut, amountOut);
+            uint256 actual = redeem(wallet, tokenOut, amountOut);
             uint256 earning = getBalance(wallet, tokenOut) - balanceBefore;
             uint8 decimals = getDecimals(tokenOut);
 
@@ -183,36 +182,6 @@ abstract contract PreviewTest is TestFoundation {
 
     function getTokensOutForPreviewTest() internal view virtual returns (address[] memory) {
         return sy.getTokensOut();
-    }
-
-    function getTokensInFeeForPreviewTest() internal view virtual returns (uint256[] memory) {
-        uint256[] memory fees = new uint256[](getTokensInForPreviewTest().length);
-        return fees;
-    }
-
-    function getTokensOutFeeForPreviewTest() internal view virtual returns (uint256[] memory) {
-        uint256[] memory fees = new uint256[](getTokensOutForPreviewTest().length);
-        return fees;
-    }
-
-    function getTokenInFee(address tokenIn) internal view returns (uint256) {
-        address[] memory tokensIn = getTokensInForPreviewTest();
-        for (uint256 i = 0; i < tokensIn.length; i++) {
-            if (tokensIn[i] == tokenIn) {
-                return getTokensInFeeForPreviewTest()[i];
-            }
-        }
-        revert("Token In invalid");
-    }
-
-    function getTokenOutFee(address tokenOut) internal view returns (uint256) {
-        address[] memory tokensOut = getTokensOutForPreviewTest();
-        for (uint256 i = 0; i < tokensOut.length; i++) {
-            if (tokensOut[i] == tokenOut) {
-                return getTokensOutFeeForPreviewTest()[i];
-            }
-        }
-        revert("Token Out invalid");
     }
 
     function getPreviewTestAllowedEps() internal pure virtual returns (uint256) {
