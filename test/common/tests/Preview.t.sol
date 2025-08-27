@@ -16,6 +16,8 @@ abstract contract PreviewTest is TestFoundation {
         bool shouldCheck;
     }
 
+    uint256 constant N_SPLIT = 2;
+
     function test_preview_depositThenRedeem() public {
         vm.skip(skipPreviewTest(), "Skipped preview test. Be sure its not a new one.");
 
@@ -143,11 +145,11 @@ abstract contract PreviewTest is TestFoundation {
         uint256 netTokenIn,
         address tokenOut
     ) internal returns (uint256) {
-        uint256 depositIn = netTokenIn / 2;
-        for (uint256 i = 0; i < 2; ++i) {
+        uint256 depositIn = netTokenIn / N_SPLIT;
+        for (uint256 i = 0; i < N_SPLIT; ++i) {
             uint256 balanceBefore = sy.balanceOf(wallet);
 
-            uint256 amountIn = (i == 0) ? depositIn : depositIn + (netTokenIn % 2); // Adjust to use up all amounts
+            uint256 amountIn = (i != 0) ? depositIn : depositIn + (netTokenIn % N_SPLIT); // Adjust to use up all amounts
             uint256 preview = sy.previewDeposit(tokenIn, amountIn);
             uint256 actual = deposit(wallet, tokenIn, amountIn);
             uint256 earning = sy.balanceOf(wallet) - balanceBefore;
@@ -157,12 +159,12 @@ abstract contract PreviewTest is TestFoundation {
             assertApprox(preview, actual, decimals, "previewDeposit: preview != actual | 60");
         }
 
-        uint256 redeemIn = sy.balanceOf(wallet) / 2;
+        uint256 redeemIn = sy.balanceOf(wallet) / N_SPLIT;
         uint256 totalAmountOut = 0;
-        for (uint256 i = 0; i < 2; ++i) {
+        for (uint256 i = 0; i < N_SPLIT; ++i) {
             uint256 balanceBefore = getBalance(wallet, tokenOut);
 
-            uint256 amountOut = (i == 0) ? redeemIn : sy.balanceOf(wallet); // Adjust to use up all amounts
+            uint256 amountOut = (i != 0) ? redeemIn : sy.balanceOf(wallet); // Adjust to use up all amounts
             uint256 preview = sy.previewRedeem(tokenOut, amountOut);
             uint256 actual = redeem(wallet, tokenOut, amountOut);
             uint256 earning = getBalance(wallet, tokenOut) - balanceBefore;
@@ -204,13 +206,5 @@ abstract contract PreviewTest is TestFoundation {
 
     function skipPreviewTest() internal pure virtual returns (bool) {
         return false;
-    }
-
-    function _calcFeeRoundTrip(uint256 amountIn, address tokenIn, address tokenOut) internal view returns (uint256) {
-        uint256 res = PMath.mulDown(amountIn, PMath.ONE - getTokenInFee(tokenIn));
-        res = PMath.mulDown(res, PMath.ONE - getTokenOutFee(tokenOut));
-        res = PMath.mulDown(res, PMath.ONE - getTokenInFee(tokenOut));
-        res = PMath.mulDown(res, PMath.ONE - getTokenOutFee(tokenIn));
-        return res;
     }
 }
