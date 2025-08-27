@@ -149,7 +149,7 @@ abstract contract PreviewTest is TestFoundation {
         for (uint256 i = 0; i < N_SPLIT; ++i) {
             uint256 balanceBefore = sy.balanceOf(wallet);
 
-            uint256 amountIn = (i != 0) ? depositIn : depositIn + (netTokenIn % N_SPLIT); // Adjust to use up all amounts
+            uint256 amountIn = (i != N_SPLIT - 1) ? depositIn : depositIn + (netTokenIn % N_SPLIT); // Adjust to use up all amounts
             uint256 preview = sy.previewDeposit(tokenIn, amountIn);
             uint256 actual = deposit(wallet, tokenIn, amountIn);
             uint256 earning = sy.balanceOf(wallet) - balanceBefore;
@@ -164,7 +164,7 @@ abstract contract PreviewTest is TestFoundation {
         for (uint256 i = 0; i < N_SPLIT; ++i) {
             uint256 balanceBefore = getBalance(wallet, tokenOut);
 
-            uint256 amountOut = (i != 0) ? redeemIn : sy.balanceOf(wallet); // Adjust to use up all amounts
+            uint256 amountOut = (i != N_SPLIT - 1) ? redeemIn : sy.balanceOf(wallet); // Adjust to use up all amounts
             uint256 preview = sy.previewRedeem(tokenOut, amountOut);
             uint256 actual = redeem(wallet, tokenOut, amountOut);
             uint256 earning = getBalance(wallet, tokenOut) - balanceBefore;
