@@ -4,7 +4,9 @@ pragma solidity ^0.8.28;
 import {SYTest} from "../../common/SYTest.t.sol";
 import {IStandardizedYield} from "pendle-sy/interfaces/IStandardizedYield.sol";
 import {PendleConcreteLBTCSY} from "pendle-sy/core/StandardizedYield/implementations/Concrete/PendleConcreteLBTCSY.sol";
-import {PendleLBTCExchangeRateOracle} from "pendle-sy/core/StandardizedYield/implementations/Lombard/PendleLBTCExchangeRateOracle.sol";
+import {
+    PendleLBTCExchangeRateOracle
+} from "pendle-sy/core/StandardizedYield/implementations/Lombard/PendleLBTCExchangeRateOracle.sol";
 import {console} from "forge-std/console.sol";
 
 interface IConcrete {
@@ -12,7 +14,7 @@ interface IConcrete {
 
     function unpause() external;
 
-    function toggleWithdraw() external; 
+    function toggleWithdraw() external;
 }
 
 contract LombardConcreteTest is SYTest {
@@ -31,11 +33,7 @@ contract LombardConcreteTest is SYTest {
         address oracle = address(new PendleLBTCExchangeRateOracle(ORACLE));
         address newImpl = address(new PendleConcreteLBTCSY(CONCRETE_VAULT, oracle));
         vm.stopPrank();
-        upgradeExistingProxy(
-            SY,
-            newImpl,
-            abi.encode()
-        );
+        upgradeExistingProxy(SY, newImpl, abi.encode());
 
         sy = IStandardizedYield(SY);
 
@@ -48,7 +46,6 @@ contract LombardConcreteTest is SYTest {
         // vm.deal(IConcrete(payable(STRAT1)).owner(), 1 ether);
         // vm.prank(IConcrete(payable(STRAT1)).owner());
         // IConcrete(STRAT1).toggleWithdraw();
-
     }
 
     function initializeSY() internal override {
@@ -56,7 +53,7 @@ contract LombardConcreteTest is SYTest {
         startToken = sy.yieldToken();
     }
 
-    function skipPreviewTest() internal pure override virtual returns (bool) {
+    function skipPreviewTest() internal pure virtual override returns (bool) {
         return true;
     }
 }

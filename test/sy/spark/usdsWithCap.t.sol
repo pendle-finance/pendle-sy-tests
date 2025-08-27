@@ -14,12 +14,10 @@ contract UsdsWithCap is SYTest {
     function deploySY() internal override {
         vm.startPrank(deployer);
 
-        sy = IStandardizedYield(
-            0x508deFdB5DD2aDEEfe36f58fdCD75d6efa36697b
-        );
+        sy = IStandardizedYield(0x508deFdB5DD2aDEEfe36f58fdCD75d6efa36697b);
         address newImpl = address(new PendleUSDSSYWithCap(sy.yieldToken()));
         vm.stopPrank();
-        
+
         upgradeExistingProxy(address(sy), newImpl, abi.encode());
 
         PendleUSDSSYWithCap c = PendleUSDSSYWithCap(payable(address(sy)));

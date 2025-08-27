@@ -2,8 +2,9 @@
 pragma solidity ^0.8.28;
 
 import {Test, console2 as console} from "forge-std/Test.sol";
-import {PendleTerminalExternalCap} from
-    "pendle-sy/core/StandardizedYield/implementations/Terminal/PendleTerminalExternalCap.sol";
+import {
+    PendleTerminalExternalCap
+} from "pendle-sy/core/StandardizedYield/implementations/Terminal/PendleTerminalExternalCap.sol";
 import "./ExternalCapGatesTest.t.sol";
 
 contract TerminalExternalCapTest is ExternalCapGatesTest {

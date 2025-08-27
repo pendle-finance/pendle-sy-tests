@@ -18,7 +18,6 @@ abstract contract SupplyCapTest is TestFoundation {
     }
 
     function test_supply_cap() public {
-
         if (getSupplyCapType() == SupplyCapType.None) {
             vm.skip(true);
         }

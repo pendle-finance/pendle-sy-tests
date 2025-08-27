@@ -17,13 +17,9 @@ contract SolvTest is SYTest {
 
         address newImpl = address(new PendleSolvBNBBTCSY());
         vm.stopPrank();
-        
-        sy = IStandardizedYield(
-            0x58b4441B97C577B66E46AA155e04dC4652FD0D34
-        );
-        upgradeExistingProxy(address(sy), newImpl, abi.encode());
-        
 
+        sy = IStandardizedYield(0x58b4441B97C577B66E46AA155e04dC4652FD0D34);
+        upgradeExistingProxy(address(sy), newImpl, abi.encode());
     }
 
     function initializeSY() internal override {

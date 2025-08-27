@@ -4,9 +4,10 @@ pragma solidity ^0.8.28;
 import {SYTest} from "../../common/SYTest.t.sol";
 import {IStandardizedYield} from "pendle-sy/interfaces/IStandardizedYield.sol";
 import {PendleL2BTCLRTSYUpg} from "pendle-sy/core/StandardizedYield/implementations/L2BTC/PendleL2BTCLRTSYUpg.sol";
-import {PendleLBTCExchangeRateOracle} from "pendle-sy/core/StandardizedYield/implementations/Lombard/PendleLBTCExchangeRateOracle.sol";
+import {
+    PendleLBTCExchangeRateOracle
+} from "pendle-sy/core/StandardizedYield/implementations/Lombard/PendleLBTCExchangeRateOracle.sol";
 import {console} from "forge-std/console.sol";
-
 
 contract LombardBeraTest is SYTest {
     function setUpFork() internal override {
@@ -21,11 +22,7 @@ contract LombardBeraTest is SYTest {
         address oracle = address(new PendleLBTCExchangeRateOracle(ORACLE));
         address newImpl = address(new PendleL2BTCLRTSYUpg(IStandardizedYield(SY).yieldToken(), oracle));
         vm.stopPrank();
-        upgradeExistingProxy(
-            SY,
-            newImpl,
-            abi.encode()
-        );
+        upgradeExistingProxy(SY, newImpl, abi.encode());
 
         sy = IStandardizedYield(SY);
 
@@ -39,7 +36,6 @@ contract LombardBeraTest is SYTest {
         // vm.deal(IConcrete(payable(STRAT1)).owner(), 1 ether);
         // vm.prank(IConcrete(payable(STRAT1)).owner());
         // IConcrete(STRAT1).toggleWithdraw();
-
     }
 
     function initializeSY() internal override {
@@ -54,7 +50,4 @@ contract LombardBeraTest is SYTest {
     function getPreviewTestAllowedEps() internal pure virtual override returns (uint256) {
         return 1;
     }
-
 }
-
-    
