@@ -18,6 +18,9 @@ remappings = [
 ast = false
 show_progress = true
 
+[fuzz]
+runs = 256
+
 [rpc_endpoints]
 arbitrum = "${ARBITRUM_RPC}"
 base = "${BASE_RPC}"
