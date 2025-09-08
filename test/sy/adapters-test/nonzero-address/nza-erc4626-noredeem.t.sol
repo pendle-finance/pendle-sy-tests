@@ -16,7 +16,9 @@ contract NZAERC4626NoRdeemSYTest is SYWithAdapterTest {
         vm.startPrank(deployer);
 
         address adapter = address(new PendleUSDSAdapter());
-        sy = IStandardizedYield(deploySYWithAdapter(AdapterType.ERC4626_NoRedeem, SUSDS, "SY Sky SUSDS", "SY-SUSDS", adapter));
+        sy = IStandardizedYield(
+            deploySYWithAdapter(AdapterType.ERC4626_NoRedeem, SUSDS, "SY Sky SUSDS", "SY-SUSDS", adapter)
+        );
 
         vm.stopPrank();
     }

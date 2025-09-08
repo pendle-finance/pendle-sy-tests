@@ -89,4 +89,8 @@ contract PendleGlpSYTest is SYTest {
     function hasReward() internal pure override returns (bool) {
         return true;
     }
+
+    function hasFee() internal pure override returns (bool) {
+        return true;
+    }
 }

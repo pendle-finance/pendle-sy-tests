@@ -16,7 +16,11 @@ abstract contract PreviewTest is TestFoundation {
         bool shouldCheck;
     }
 
+    uint256 constant N_SPLIT = 2;
+
     function test_preview_depositThenRedeem() public {
+        vm.skip(skipPreviewTest(), "Skipped preview test. Be sure its not a new one.");
+
         PreviewDepositThenRedeemTestParam[] memory testParams = _genPreviewDepositThenRedeemTestParams();
         console.log("[-----test_preview_depositThenRedeem-----]");
 
@@ -24,6 +28,8 @@ abstract contract PreviewTest is TestFoundation {
         uint256 maxRoundTripDeltaAbs = 0;
         uint256 maxRoundTripDeltaRel = 0;
         uint256 totalRoundTripDeltaRel = 0;
+
+        uint256 cntRoundTripTest = 0;
 
         for (uint256 i = 0; i < testParams.length; ++i) {
             address tokenIn = testParams[i].tokenIn;
@@ -38,12 +44,12 @@ abstract contract PreviewTest is TestFoundation {
 
             fundToken(alice, tokenIn, amountIn);
 
-            (
-                uint256 amountOut,
-                bool doRoundTrip,
-                uint256 amountRoundTrip,
-                uint256 roundTripDeltaAbs
-            ) = _executePreviewTest(alice, tokenIn, amountIn, tokenOut);
+            (uint256 amountOut, bool doRoundTrip, uint256 amountRoundTrip, uint256 roundTripDeltaAbs) =
+                _executePreviewTest(alice, tokenIn, amountIn, tokenOut);
+
+            if (doRoundTrip) {
+                cntRoundTripTest++;
+            }
 
             uint256 roundTripDeltaRel = PMath.divDown(roundTripDeltaAbs, amountIn);
             maxRoundTripDeltaAbs = PMath.max(maxRoundTripDeltaAbs, roundTripDeltaAbs);
@@ -65,9 +71,10 @@ abstract contract PreviewTest is TestFoundation {
 
         checkRequired("Summary");
         console.log("Total tests                    :", testParams.length);
+        console.log("Total round trip tests         :", cntRoundTripTest);
         // console.log("Max round trip delta abs:", maxRoundTripDeltaAbs);
         console.log("Max round trip delta rel       : %18e", maxRoundTripDeltaRel);
-        console.log("Average round trip delta rel   : %18e", totalRoundTripDeltaRel / testParams.length);
+        console.log("Average round trip delta rel   : %18e", totalRoundTripDeltaRel / cntRoundTripTest);
 
         console.log("");
     }
@@ -119,11 +126,15 @@ abstract contract PreviewTest is TestFoundation {
         doRoundTrip = sy.isValidTokenIn(tokenOut) && sy.isValidTokenOut(tokenIn);
         if (doRoundTrip) {
             amountRoundTrip = _executePreviewTestOnce(wallet, tokenOut, totalAmountOut, tokenIn);
-
             roundTripDeltaAbs = stdMath.delta(amountRoundTrip, netTokenIn);
 
             if (!hasFee()) {
-                assertLt(roundTripDeltaAbs, 10, "Amount round trip should be close to netTokenIn");
+                assertApprox(
+                    amountRoundTrip,
+                    netTokenIn,
+                    getDecimals(tokenIn),
+                    "amountRoundTrip should be close to netTokenIn | 50"
+                );
             }
         }
     }
@@ -134,12 +145,13 @@ abstract contract PreviewTest is TestFoundation {
         uint256 netTokenIn,
         address tokenOut
     ) internal returns (uint256) {
-        uint256 depositIn = netTokenIn / 2;
-        for (uint256 i = 0; i < 2; ++i) {
+        uint256 depositIn = netTokenIn / N_SPLIT;
+        for (uint256 i = 0; i < N_SPLIT; ++i) {
             uint256 balanceBefore = sy.balanceOf(wallet);
 
-            uint256 preview = sy.previewDeposit(tokenIn, depositIn);
-            uint256 actual = deposit(wallet, tokenIn, depositIn);
+            uint256 amountIn = (i != N_SPLIT - 1) ? depositIn : depositIn + (netTokenIn % N_SPLIT); // Adjust to use up all amounts
+            uint256 preview = sy.previewDeposit(tokenIn, amountIn);
+            uint256 actual = deposit(wallet, tokenIn, amountIn);
             uint256 earning = sy.balanceOf(wallet) - balanceBefore;
             uint8 decimals = sy.decimals();
 
@@ -147,13 +159,14 @@ abstract contract PreviewTest is TestFoundation {
             assertApprox(preview, actual, decimals, "previewDeposit: preview != actual | 60");
         }
 
-        uint256 redeemIn = sy.balanceOf(wallet) / 2;
+        uint256 redeemIn = sy.balanceOf(wallet) / N_SPLIT;
         uint256 totalAmountOut = 0;
-        for (uint256 i = 0; i < 2; ++i) {
+        for (uint256 i = 0; i < N_SPLIT; ++i) {
             uint256 balanceBefore = getBalance(wallet, tokenOut);
 
-            uint256 preview = sy.previewRedeem(tokenOut, redeemIn);
-            uint256 actual = redeem(wallet, tokenOut, redeemIn);
+            uint256 amountOut = (i != N_SPLIT - 1) ? redeemIn : sy.balanceOf(wallet); // Adjust to use up all amounts
+            uint256 preview = sy.previewRedeem(tokenOut, amountOut);
+            uint256 actual = redeem(wallet, tokenOut, amountOut);
             uint256 earning = getBalance(wallet, tokenOut) - balanceBefore;
             uint8 decimals = getDecimals(tokenOut);
 
@@ -173,21 +186,25 @@ abstract contract PreviewTest is TestFoundation {
         return sy.getTokensOut();
     }
 
-    function getPreviewTestAllowedDiff() internal pure virtual returns (uint256) {
+    function getPreviewTestAllowedEps() internal pure virtual returns (uint256) {
         return 0;
     }
 
     function assertApprox(uint256 actual, uint256 expected, uint8 decimal, string memory message) internal pure {
-        uint256 allowDiff = getPreviewTestAllowedDiff();
-
-        if (allowDiff == 0) {
+        uint256 allowedEps = getPreviewTestAllowedEps();
+        if (allowedEps == 0) {
             assertEqDecimal(actual, expected, decimal, message);
         } else {
-            assertApproxEqAbsDecimal(actual, expected, allowDiff + 1, decimal, message);
+            uint256 allowDiffAbs = PMath.max(1, PMath.mulDown(expected, allowedEps));
+            assertApproxEqAbsDecimal(actual, expected, allowDiffAbs, decimal, message);
         }
     }
 
     function hasFee() internal pure virtual returns (bool) {
+        return false;
+    }
+
+    function skipPreviewTest() internal pure virtual returns (bool) {
         return false;
     }
 }

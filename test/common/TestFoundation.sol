@@ -3,6 +3,7 @@ pragma solidity ^0.8.28;
 
 import {Test} from "forge-std/Test.sol";
 import {IERC20, IERC20Metadata} from "@openzeppelin/contracts/token/ERC20/extensions/IERC20Metadata.sol";
+import {SafeERC20} from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import {IStandardizedYield} from "pendle-sy/interfaces/IStandardizedYield.sol";
 import {ArrayHelpers} from "../helpers/ArrayHelpers.sol";
 import {DeployHelpers} from "../helpers/DeployHelpers.sol";
@@ -42,9 +43,22 @@ abstract contract TestFoundation is ArrayHelpers, DeployHelpers, TokenHelpers, T
 
     function test_exchangeRateSanity() public view {
         uint256 exchangeRate = sy.exchangeRate();
+
+        uint256 decimalsSY = IERC20Metadata(address(sy)).decimals();
+        (, , uint8 decimalsAsset) = sy.assetInfo();
+
+        uint256 amtAsset = ((10 ** decimalsSY) * sy.exchangeRate()) / (10 ** 18);
+        uint256 amtAsset18 = amtAsset;
+        if (decimalsAsset < 18) {
+            amtAsset18 = amtAsset * (10 ** (18 - decimalsAsset));
+        } else if (decimalsAsset > 18) {
+            amtAsset18 = amtAsset / (10 ** (decimalsAsset - 18));
+        }
+
         checkRequired(string.concat("Exchange rate: ", vm.toString(exchangeRate)));
+        console.log("                 1 SY = %18e asset", amtAsset18);
+
         assertGt(exchangeRate, 0, "Exchange rate should be greater than 0");
-        console.log("");
     }
 
     function refAmountFor(address token) internal view virtual returns (uint256) {
@@ -70,10 +84,11 @@ abstract contract TestFoundation is ArrayHelpers, DeployHelpers, TokenHelpers, T
             vm.prank(wallet);
             amountSharesOut = sy.deposit{value: amountTokenIn}(wallet, tokenIn, amountTokenIn, 0);
         } else {
-            vm.prank(wallet);
-            IERC20(tokenIn).approve(address(sy), amountTokenIn);
-            vm.prank(wallet);
+            vm.startPrank(wallet);
+            safeApprove(tokenIn, address(sy), 0);
+            safeApprove(tokenIn, address(sy), amountTokenIn);
             amountSharesOut = sy.deposit(wallet, tokenIn, amountTokenIn, 0);
+            vm.stopPrank();
         }
     }
 

@@ -22,3 +22,6 @@ show_progress = true
 arbitrum = "${ARBITRUM_RPC}"
 base = "${BASE_RPC}"
 ethereum = "${ETH_RPC}"
+hyperevm = "${HYPEREVM_RPC}"
+berachain = "${BERACHAIN_RPC}"
+bsc = "${BSC_RPC}"
