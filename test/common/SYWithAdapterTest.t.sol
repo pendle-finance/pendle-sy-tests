@@ -39,11 +39,11 @@ abstract contract SYWithAdapterTest is DepositRedeemTest, MetadataTest, PreviewT
 
     function _deploySYWithAdapterLogic(AdapterType adapterType, address yieldToken) private returns (address) {
         if (adapterType == AdapterType.ERC20) {
-            return address(new PendleERC20WithAdapterSY(yieldToken));
+            return address(new PendleERC20WithAdapterSY(yieldToken, deployer));
         } else if (adapterType == AdapterType.ERC4626) {
-            return address(new PendleERC4626WithAdapterSY(yieldToken));
+            return address(new PendleERC4626WithAdapterSY(yieldToken, deployer));
         } else if (adapterType == AdapterType.ERC4626_NoRedeem) {
-            return address(new PendleERC4626NoRedeemWithAdapterSY(yieldToken));
+            return address(new PendleERC4626NoRedeemWithAdapterSY(yieldToken, deployer));
         } else {
             revert("SYWithAdapterTest: Invalid adapter type");
         }
