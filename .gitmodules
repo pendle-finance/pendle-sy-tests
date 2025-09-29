@@ -8,4 +8,4 @@
 [submodule "lib/pendle-core"]
 	path = lib/pendle-core
 	url = git@github.com:pendle-finance/pendle-core-v2-public.git
-	branch = main
+	branch = main-public
